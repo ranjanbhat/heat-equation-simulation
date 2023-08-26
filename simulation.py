@@ -21,8 +21,8 @@ plot_time_steps = [0, 100, 500, 1000]
 
 filename = f"u_3d_{alpha}_{dx}_{dt}_{N}_{num_steps}"
 
-def display_and_save_3d_plot(u_3d, filename):
-    fig = plt.figure()
+def display_and_save_plots(u_3d, filename):
+    fig = plt.figure(1)
     ax = fig.add_subplot(111, projection='3d')
     X, T_vals = np.meshgrid(np.linspace(0, L, N, endpoint=False), np.linspace(0, T, num_steps))
     ax.plot_surface(X, T_vals, u_3d, cmap='viridis')
@@ -31,10 +31,8 @@ def display_and_save_3d_plot(u_3d, filename):
     ax.set_ylabel('t')
     ax.set_zlabel('u')
     plt.savefig(f'{filename}_3d.png')
-    plt.show()
 
-def display_and_save_2d_plots(u_3d, filename):
-    plt.figure()
+    plt.figure(2)
     x = np.linspace(0, L, N, endpoint=False)
     for step in plot_time_steps:
         plt.plot(x, u_3d[step], label=f"t = {step * dt}")
@@ -52,9 +50,7 @@ def main():
     if os.path.exists(f'{filename}.npy'):
         u_3d = np.load(f'{filename}.npy')
         print("Loaded data from file")
-        display_and_save_3d_plot(u_3d, filename)
-        x = np.linspace(0, L, N, endpoint=False)
-        display_and_save_2d_plots(u_3d, filename)
+        display_and_save_plots(u_3d, filename)
         exit()
 
     x = np.linspace(0, L, N, endpoint=False)
@@ -74,8 +70,7 @@ def main():
 
         u = new_u
 
-    display_and_save_3d_plot(u_3d, filename)
-    display_and_save_2d_plots(u_3d, filename)
+    display_and_save_plots(u_3d, filename)
     np.save(f'{filename}.npy', u_3d)
 
 if __name__ == "__main__":
