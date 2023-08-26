@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 # Parameters
 L = 1.0         # Domain length
@@ -13,17 +12,19 @@ def initial_condition(x):
     return np.sin(2 * np.pi * x)
 
 # Grid and time step
-N = 100         # Number of grid points
+N = 128         # Number of grid points
 dx = L / N      # Grid spacing
 dt = 0.00001    # Time step
 num_steps = int(T/dt)    # Number of time steps
+
+plot_time_steps = [0, 100, 500, 1000]
 
 filename = f"u_3d_{alpha}_{dx}_{dt}_{N}_{num_steps}"
 
 if os.path.exists(f'{filename}.npy'):
     u_3d = np.load(f'{filename}.npy')
     print("Loaded data from file")
-    fig = plt.figure()
+    fig = plt.figure(1)
     ax = fig.add_subplot(111, projection='3d')
     X, T = np.meshgrid(np.linspace(0, L, N, endpoint=False), np.linspace(0, T, num_steps))
     ax.plot_surface(X, T, u_3d, cmap='viridis')
@@ -31,6 +32,14 @@ if os.path.exists(f'{filename}.npy'):
     ax.set_xlabel('x')
     ax.set_ylabel('t')
     ax.set_zlabel('u')
+    plt.savefig(f'{filename}_3d.png')
+    plt.show()
+    plt.figure(2)
+    x = np.linspace(0, L, N, endpoint=False)
+    for step in plot_time_steps:
+        plt.plot(x, u_3d[step], label=f"t = {step * dt}")
+    plt.legend()
+    plt.savefig(f'{filename}_2d.png')
     plt.show()
     exit()
 
@@ -66,17 +75,25 @@ for step in range(num_steps):
     u = new_u
 
 # Create 3D plot
-fig = plt.figure()
+fig = plt.figure(1)
 ax = fig.add_subplot(111, projection='3d')
 ax.plot_surface(X, T, u_3d, cmap='viridis')
 
 # save figure and data, file name must include alpha, dx, dt, N, num_steps
 np.save(f'{filename}.npy', u_3d)
-plt.savefig(f'{filename}.png')
+plt.savefig(f'{filename}_3d.png')
 
 ax.set_title(f"Diffusion Equation Solution")
 ax.set_xlabel('x')
 ax.set_ylabel('t')
 ax.set_zlabel('u')
+plt.show()
 
+# Create 2D plot
+plt.figure(2)
+for step in plot_time_steps:
+    plt.plot(x, u_3d[step], label=f"t = {step * dt}")
+plt.legend()
+np.save(f'{filename}.npy', u_3d)
+plt.savefig(f'{filename}_2d.png')
 plt.show()
