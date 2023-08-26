@@ -39,6 +39,9 @@ if os.path.exists(f'{filename}.npy'):
     for step in plot_time_steps:
         plt.plot(x, u_3d[step], label=f"t = {step * dt}")
     plt.legend()
+    plt.xlabel('x')
+    plt.ylabel('u')
+    plt.title(f"Diffusion Equation Solution")
     plt.savefig(f'{filename}_2d.png')
     plt.show()
     exit()
@@ -66,12 +69,6 @@ for step in range(num_steps):
         new_u[i] = u[i] + alpha * dt / (dx * dx) * (u[left] - 2 * u[i] + u[right])
         print(new_u[i] - u[i])
 
-        # Dirichlet boundary conditions
-        # if i == 0 or i == N - 1:
-        #     new_u[i] = 0
-        # else:
-        #     new_u[i] = u[i] + alpha * dt / (dx * dx) * (u[i - 1] - 2 * u[i] + u[i + 1])
-
     u = new_u
 
 # Create 3D plot
@@ -93,7 +90,19 @@ plt.show()
 plt.figure(2)
 for step in plot_time_steps:
     plt.plot(x, u_3d[step], label=f"t = {step * dt}")
+    # Calculate average error at these time steps
+    solution = np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * x)
+    mean_error = np.sum(np.abs(u_3d[step] - solution)) / N
+    rms_error = np.sqrt(np.sum((u_3d[step] - solution) ** 2) / N)
+    print(f"Mean error at t = {step * dt} is {mean_error}")
+    print(f"RMS error at t = {step * dt} is {rms_error}")
+
+plt.xlabel('x')
+plt.ylabel('u')
+plt.title(f"Diffusion Equation Solution")
 plt.legend()
 np.save(f'{filename}.npy', u_3d)
 plt.savefig(f'{filename}_2d.png')
 plt.show()
+
+
