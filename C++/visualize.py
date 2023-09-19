@@ -14,33 +14,33 @@ def read_data(filename):
 # Parameters
 N = 128  # Number of grid points
 T = 0.1  # Simulation time
+L = 1.0  # Domain length
 dt = 0.00001  # Time step
+alpha = 1  # Diffusion coefficient
 num_steps = int(T / dt)  # Number of time steps
 
 # Read data from the main output file
 data = read_data('u_data.txt')
 
-# Create a 3D plot for the full domain
-fig = plt.figure()
+fig = plt.figure(1)
 ax = fig.add_subplot(111, projection='3d')
-x = np.linspace(0, 1, N, endpoint=False)
-t = np.linspace(0, T, num_steps)
-X, T = np.meshgrid(x, t)
-ax.plot_surface(X, T, data, cmap='viridis')
-ax.set_title('Heat Equation Solution (3D)')
+X, T_vals = np.meshgrid(np.linspace(0, L, N, endpoint=False), np.linspace(0, T, num_steps))
+ax.plot_surface(X, T_vals, data, cmap='viridis')
+ax.set_title(f"Heat Equation Solution")
 ax.set_xlabel('x')
 ax.set_ylabel('t')
 ax.set_zlabel('u')
-plt.show()
 
-# Read data from specific time step files and create 2D plots
 plot_time_steps = [0, 100, 500, 1000]
+plt.figure(2)
+x = np.linspace(0, L, N, endpoint=False)
 for step in plot_time_steps:
-    data_step = read_data(f'u_data_{step}.txt')
-    plt.figure()
-    plt.plot(x, data_step, label=f't = {step * dt}')
-    plt.xlabel('x')
-    plt.ylabel('u')
-    plt.legend()
-    plt.title('Heat Equation Solution (2D)')
-    plt.show()
+    data = read_data(f'u_data_{step}.txt')
+    plt.plot(x, data.reshape(x.shape), label=f"t = {step * dt}")
+    solution = np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * x)
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('u')
+plt.title(f"Heat Equation Solution")
+
+plt.show()
