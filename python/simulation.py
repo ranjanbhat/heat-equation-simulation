@@ -55,7 +55,6 @@ def main():
 
     x = np.linspace(0, L, N, endpoint=False)
     u = initial_condition(x)
-    X, T = np.meshgrid(x, np.linspace(0, T, num_steps))
     u_3d = np.zeros((num_steps, N))
 
     for step in range(num_steps):
