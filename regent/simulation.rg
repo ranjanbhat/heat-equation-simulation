@@ -58,7 +58,6 @@ task main()
     end
     format.println("Done!")
 
-
 end
 
 regentlib.start(main)
