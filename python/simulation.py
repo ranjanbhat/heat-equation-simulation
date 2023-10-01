@@ -51,6 +51,8 @@ def main():
         u_3d = np.load(f'{filename}.npy')
         print("Loaded data from file")
         display_and_save_plots(u_3d, filename)
+        # print final solution
+        print(u_3d[-1])
         exit()
 
     x = np.linspace(0, L, N, endpoint=False)
@@ -71,6 +73,8 @@ def main():
 
     display_and_save_plots(u_3d, filename)
     np.save(f'{filename}.npy', u_3d)
+
+    print(u)
 
 if __name__ == "__main__":
     main()
