@@ -12,7 +12,7 @@ def initial_condition(x):
     return np.sin(2 * np.pi * x)
 
 # Grid and time step
-N = 128         # Number of grid points
+N = 50         # Number of grid points
 dx = L / N      # Grid spacing
 dt = 0.00001    # Time step
 num_steps = int(T / dt)    # Number of time steps
@@ -37,22 +37,36 @@ def display_and_save_plots(u_3d, filename):
     for step in plot_time_steps:
         plt.plot(x, u_3d[step], label=f"t = {step * dt}")
         solution = np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * x)
-        mean_error = np.sum(np.abs(u_3d[step] - solution)) / N
-        print(f"Mean error at t = {step * dt} is {mean_error}")
+        # mean_error = np.sum(np.abs(u_3d[step] - solution)) / N
+        # print(f"Mean error at t = {step * dt} is {mean_error}")
     plt.legend()
     plt.xlabel('x')
     plt.ylabel('u')
     plt.title(f"Heat Equation Solution")
     plt.savefig(f'{filename}_2d.png')
+    print_plot_errors(u_3d, filename)
     plt.show()
+
+def print_plot_errors(u_3d, filename):
+    errors = []
+    x = np.linspace(0, L, N, endpoint=False)
+    for step in range(u_3d.shape[0]):
+        solution = np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * x)
+        mean_error = np.sum(np.abs(u_3d[step] - solution)) / N
+        print(f"E({step * dt}) = {mean_error}")
+        errors.append(mean_error)
+    fig = plt.figure(3)
+    plt.plot(np.linspace(0, T, num_steps), errors)
+    plt.xlabel('t')
+    plt.ylabel('E(t)')
+    plt.savefig(f'{filename}_error.png')
+    plt.title(f"Error")
 
 def main():
     if os.path.exists(f'{filename}.npy'):
         u_3d = np.load(f'{filename}.npy')
         print("Loaded data from file")
         display_and_save_plots(u_3d, filename)
-        # print final solution
-        print(u_3d[-1])
         exit()
 
     x = np.linspace(0, L, N, endpoint=False)
@@ -73,8 +87,6 @@ def main():
 
     display_and_save_plots(u_3d, filename)
     np.save(f'{filename}.npy', u_3d)
-
-    print(u)
 
 if __name__ == "__main__":
     main()
