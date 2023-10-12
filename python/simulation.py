@@ -61,7 +61,7 @@ def print_plot_errors(u_3d, filename):
     plt.ylabel('E(t)')
     plt.savefig(f'{filename}_error.png')
     plt.title(f"Error")
-
+ 
 def main():
     if os.path.exists(f'{filename}.npy'):
         u_3d = np.load(f'{filename}.npy')
