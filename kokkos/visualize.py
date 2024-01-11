@@ -12,7 +12,7 @@ def read_data(filename):
     return np.array(data)
 
 # Parameters
-N = 50  # Number of grid points
+N = 200  # Number of grid points
 T = 0.1  # Simulation time
 L = 1.0  # Domain length
 dt = 0.00001  # Time step
@@ -30,16 +30,26 @@ ax.set_xlabel('x')
 ax.set_ylabel('t')
 ax.set_zlabel('u')
 
+true = np.array([np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * np.linspace(0, L, N, endpoint=False)) for step in range(num_steps)])
+errors = np.sum(np.abs(data - true), axis=1) / N
+
+# errors = read_data('error.txt')
+fig2 = plt.figure(2)
+plt.plot(np.linspace(0, T, num_steps), errors)
+plt.xlabel('t')
+plt.ylabel('E(t)')
+plt.title(f"Error")
+
 plot_time_steps = [0, 100, 500, 1000]
-plt.figure(2)
+plt.figure(3)
 x = np.linspace(0, L, N, endpoint=False)
 for step in plot_time_steps:
     step_data = data[step]
     plt.plot(x, step_data.reshape(x.shape), label=f"t = {step * dt}")
-    solution = np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * x)
 plt.legend()
 plt.xlabel('x')
 plt.ylabel('u')
 plt.title(f"Heat Equation Solution")
+
 
 plt.show()

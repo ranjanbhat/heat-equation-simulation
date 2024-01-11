@@ -46,3 +46,10 @@ clean: kokkos-clean
 
 %.o:%.cpp $(KOKKOS_CPP_DEPENDS)
 	$(CXX) $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $< -o $(notdir $@)
+
+# Run the executable if it exists
+run_exe: $(EXE)
+	./$(EXE)
+
+run: run_exe
+	python3 visualize.py

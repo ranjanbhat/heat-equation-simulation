@@ -12,7 +12,7 @@ def initial_condition(x):
     return np.sin(2 * np.pi * x)
 
 # Grid and time step
-N = 50         # Number of grid points
+N = 200         # Number of grid points
 dx = L / N      # Grid spacing
 dt = 0.00001    # Time step
 num_steps = int(T / dt)    # Number of time steps
