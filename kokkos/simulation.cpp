@@ -51,6 +51,16 @@ int main(int argc, char* argv[]) {
                 u_3d(step, i) = u(i);
             });
 
+            // Calculate error
+            double error = 0.0;
+            Kokkos::parallel_reduce("Error", N, KOKKOS_LAMBDA(const int i, double& error) {
+                double x = i * dx;
+                double diff = std::abs(u(i) - std::exp(-4.0 * M_PI * M_PI * alpha * step * dt) * std::sin(2.0 * M_PI * x));
+                error += diff;
+            }, error);
+            errors(step) = error/N;
+            error_total += error/N;
+
             double delta[4] = {0, 1, 1.0/3, 1};
             double a[3] = {0, -4.0, 1.0/27};
             double b[3] = {1, 2.0/9, 3.0/4};
@@ -72,7 +82,6 @@ int main(int argc, char* argv[]) {
                     int right3 = (i + 3) % N;
 
                     q(i) = a[m]*q(i) + alpha * (2*u_frac(left3) - 27*u_frac(left2) + 270*u_frac(left1) - 490*u_frac(i) + 270*u_frac(right1) - 27*u_frac(right2) + 2*u_frac(right3)) / (180*dx*dx) * dt;
-                    // qi = a[m]*qi + alpha * (u_frac(left1) - 2*u_frac(i) + u_frac(right1)) / (dx*dx) * dt;
                     u_temp(i) = u_frac(i) + b[m]*q(i);
 
                 });
@@ -95,16 +104,6 @@ int main(int argc, char* argv[]) {
 
             Kokkos::fence();
 
-            // Calculate error
-            double error = 0.0;
-            Kokkos::parallel_reduce("Error", N, KOKKOS_LAMBDA(const int i, double& error) {
-                double x = i * dx;
-                double diff = std::abs(u(i) - std::exp(-4.0 * M_PI * M_PI * alpha * step * dt) * std::sin(2.0 * M_PI * x));
-                error += diff;
-            }, error);
-            errors(step) = error/N;
-            error_total += error/N;
-
             // // Note: You may want to synchronize Kokkos view data if needed
             // Kokkos::fence();
         }
@@ -120,11 +119,11 @@ int main(int argc, char* argv[]) {
         // outFile.close();
 
         // Write errors to a file
-        // std::ofstream outFile2("error.txt");
-        // for (int step = 0; step < num_steps; ++step) {
-        //     outFile2 << errors(step) << "\n";
-        // }
-        // outFile2.close();
+        std::ofstream outFile2("error_with_time.txt");
+        for (int step = 0; step < num_steps; ++step) {
+            outFile2 << errors(step) << "\n";
+        }
+        outFile2.close();
 
         // Append error into a file
         std::ofstream outFile3("error.txt", std::ios_base::app);

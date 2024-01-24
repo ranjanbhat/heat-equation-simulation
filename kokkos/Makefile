@@ -1,7 +1,7 @@
 KOKKOS_PATH = ${HOME}/kokkos
 KOKKOS_SRC_PATH = ${KOKKOS_PATH}
 SRC = $(wildcard /home/hooded/HeatEquation/heat-equation-simulation/kokkos/*.cpp)
-N = 512
+N = 128
 vpath %.cpp $(sort $(dir $(SRC)))
 
 default: build
