@@ -21,6 +21,11 @@ int main(int argc, char* argv[]) {
     const int num_steps = static_cast<int>(T / dt);  // Number of time steps
     double error_total = 0.0;
 
+    int time_steps_to_save[5] = {static_cast<int>(num_steps*0), 
+                                 static_cast<int>(num_steps*0.05), 
+                                 static_cast<int>(num_steps*0.1), 
+                                 static_cast<int>(num_steps*0.25), 
+                                 static_cast<int>(num_steps*0.5)};
     // Kokkos initialization
     Kokkos::initialize();
 
@@ -50,6 +55,20 @@ int main(int argc, char* argv[]) {
             Kokkos::parallel_for("CopyToResult", N, KOKKOS_LAMBDA(const int i) {
                 u_3d(step, i) = u(i);
             });
+        
+            // Write results to a file results_N.txt
+            if (step == time_steps_to_save[0] || step == time_steps_to_save[1] || step == time_steps_to_save[2] || step == time_steps_to_save[3] || step == time_steps_to_save[4]) {
+                std::ofstream outFile;
+                if (step == time_steps_to_save[0])
+                    outFile.open("results_" + std::to_string(N) + ".txt");
+                else 
+                    outFile.open("results_" + std::to_string(N) + ".txt", std::ios_base::app);
+                for (int i = 0; i < N; ++i) {
+                    outFile << u(i) << " ";
+                }
+                outFile << "\n";
+                outFile.close();
+            }
 
             // Calculate error
             double error = 0.0;
@@ -108,15 +127,6 @@ int main(int argc, char* argv[]) {
             // Kokkos::fence();
         }
 
-        // Write results to a file results_N.txt
-        // std::ofstream outFile("results_" + std::to_string(N) + ".txt");
-        // for (int step = 0; step < num_steps; ++step) {
-        //     for (int i = 0; i < N; ++i) {
-        //         outFile << u_3d(step, i) << " ";
-        //     }
-        //     outFile << "\n";
-        // }
-        // outFile.close();
 
         // Write errors to a file
         std::ofstream outFile2("error_with_time.txt");

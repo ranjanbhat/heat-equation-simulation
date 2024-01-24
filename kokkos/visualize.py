@@ -44,6 +44,23 @@ print(f"num_steps = {num_steps}")
 true = np.array([np.exp(-4 * np.pi * np.pi * alpha * step * dt) * np.sin(2 * np.pi * np.arange(0, L, dx)) for step in range(num_steps)])
 # errors = np.sum(np.abs(data - true), axis=1) / N
 # print(errors[0])
+
+plot_time_steps = [0, 0.05, 0.1, 0.25, 0.5]
+plot_time_steps = [int(num_steps*step) for step in plot_time_steps]
+plt.figure(3)
+x = np.arange(0, L, dx)
+for i, step in enumerate(plot_time_steps):
+    step_data = data[i]  
+    plt.plot(x, step_data.reshape(x.shape), label=f"t = {step * dt}")
+    # in dashed lines
+    # plt.plot(x, true[step], '--', label=f"t = {step * dt} (true)")
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('u')
+plt.title(f"Heat Equation Solution")
+# save figure 3
+plt.savefig(f"comparison_plots.png")
+
 errors = read_data('error_with_time.txt')
 
 # errors = read_data('error.txt')
@@ -53,21 +70,6 @@ plt.xlabel('t')
 plt.ylabel('E(t)')
 plt.title(f"Error")
 
-plot_time_steps = [0, 0.05, 0.1, 0.25, 0.5]
-plot_time_steps = [int(num_steps*step) for step in plot_time_steps]
-plt.figure(3)
-x = np.arange(0, L, dx)
-for step in plot_time_steps:
-    step_data = data[step]  
-    plt.plot(x, step_data.reshape(x.shape), label=f"t = {step * dt}")
-    # in dashed lines
-    plt.plot(x, true[step], '--', label=f"t = {step * dt} (true)")
-plt.legend()
-plt.xlabel('x')
-plt.ylabel('u')
-plt.title(f"Heat Equation Solution")
-# save figure 3
-plt.savefig(f"comparison_plots.png")
 
 # true = np.array([np.exp(-4 * np.pi * np.pi * 4 *  alpha * step * dt) * np.sin(2 * np.pi * np.linspace(0, L, N, endpoint=False)) for step in range(num_steps)])
 
